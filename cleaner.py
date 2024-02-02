@@ -6,15 +6,20 @@ def clean_html_from_files(folder_path):
             file_path = os.path.join(folder_path, filename)
 
             with open(file_path, 'r', encoding='utf-8') as file:
-                file_content = file.read()
-                # Find the first '<' and the last '>' to extract HTML content
-                start_index = file_content.find('<')
-                end_index = file_content.rfind('>')
-                if start_index != -1 and end_index != -1 and end_index > start_index:
-                    html_content = file_content[start_index:end_index+1]
-                else:
-                    print(f"No valid HTML content boundaries found in {filename}.")
-                    continue
+                lines = file.readlines()
+            
+            # Check if 'OK' is in the first line and remove it if true
+            if lines and 'OK' in lines[0]:
+                lines = lines[1:]
+
+            file_content = ''.join(lines)
+            start_index = file_content.find('<')
+            end_index = file_content.rfind('>')
+            if start_index != -1 and end_index != -1 and end_index > start_index:
+                html_content = file_content[start_index:end_index+1]
+            else:
+                print(f"No valid HTML content boundaries found in {filename}.")
+                continue
 
             # Create a new filename for the cleaned file
             new_filename = os.path.splitext(filename)[0] + '-cleaned.txt'
